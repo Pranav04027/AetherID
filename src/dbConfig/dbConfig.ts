@@ -22,7 +22,7 @@ export default async function dbConnect() {
 
       return connection;
     }
-  } catch (error) {
-    throw new Error("Failed to connect to the database");
+  } catch (error: any) {
+    console.error("Filled to connect to the database", error)
   }
 }

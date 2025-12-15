@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    passwordHash: {
+    password: {
         type: String,
         required: true,
     },
@@ -23,10 +23,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    avatar:{
-        type: String,
-        default: null
-    },
     isVerified: {
         type: Boolean,
         default: false
@@ -34,11 +30,11 @@ const userSchema = new mongoose.Schema({
 
 
     //Token Fields
-    verifyToken: {
+    verifyToken: { //These are hashed Token
         type: String,
         default: null
     },
-    veryfyTokenExpiry: {
+    verifyTokenExpiry: {
         type: Date,
         default: null
     },
@@ -71,15 +67,15 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function (this: any) {
     const user = this as any;
 
-    if (user.isModified('passwordHash')) {
-     user.passwordHash = await bcrypt.hash(user.passwordHash, 12);
+    if (user.isModified('password')) {
+     user.password = await bcrypt.hash(user.password, 12);
     }
 
 });
 
 userSchema.methods.comparePassword = async function(password: string){
     const user = this as any;
-    return bcrypt.compare(password, user.passwordHash);
+    return bcrypt.compare(password, user.password);
 }
 
 export const User = mongoose.models.users || mongoose.model('users', userSchema);
