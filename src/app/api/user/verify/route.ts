@@ -1,51 +1,63 @@
-import mailer from "@/helpers/mailer";
 import { NextResponse, NextRequest } from "next/server";
 import { User } from "@/models/User";
 import dbConnect from "@/dbConfig/dbConfig";
 import crypto from "crypto";
 
+dbConnect();
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email } = body;
-    if (!email) {
+    const { rawToken } = body;
+    if (!rawToken) {
       return NextResponse.json(
-        { message: "No email", success: false },
+        { message: "Raw Token was not recived", success: false },
         { status: 400 }
       );
     }
 
-    // Token stuff
-    // 1) Create tokens
-    const rawToken = crypto.randomBytes(32).toString("hex");
     const hashedToken = crypto
       .createHash("sha256")
       .update(rawToken)
       .digest("hex");
 
-    const user = await User.findOne({ email: email }).select("-password");
+    const user = await User.findOne({ verifyToken: hashedToken }).select("-password");
     if (!user) {
       return NextResponse.json(
-        { message: "User not found with the email", success: false },
+        { message: "User was not found", success: false },
         { status: 400 }
       );
     }
 
-    if(user){
-        user.verifyToken = hashedToken;
-        user.verifyTokenExpiry = Date.now() + 3600000
-
-        await user.save()
+    if(user.verifyTokenExpiry > Date.now()){
+        return NextResponse.json(
+            {message: "Tokens Expired", success: false},
+            {status: 400}
+        )
     }
 
-    await mailer(email, rawToken, "verify")
-    
+    if(hashedToken === user.verifyToken){
+        user.isVerified = true;
+        user.verifyToken = undefined;      // Clear the token
+        user.verifyTokenExpiry = undefined;
 
+        await user.save()
+        
+        return NextResponse.json(
+            {message:"Success! Verified", success: true},
+            {status: 200}
+        )
+    }else{
+        return NextResponse.json(
+            {message:"User DOES NOT match", success: false},
+            {status: 400}
+        )
+    }
+    
   } catch (error: any) {
-    console.error("Some error", error);
     return NextResponse.json(
-      { message: "Some error", success: false },
-      { status: 500 }
-    );
+        {messgae:"Error occured", success: false},
+        {status: 400}
+    )
   }
 }

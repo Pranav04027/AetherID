@@ -1,13 +1,10 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState, useEffect} from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function SignupPage() {
-    const router = useRouter();
 
     const [user, setUser] = useState({
         email: '',
@@ -21,15 +18,18 @@ export default function SignupPage() {
         try {
             setLoading(true)
 
-            const response = await axios.post("/api/user/signup", user)
-            console.log(response.data)
+            // Toast promise handles the await, other stuff..
+            await toast.promise(
+                axios.post("/api/user/signup", user),
+                {
+                    loading: 'Crating your account..',
+                    success: 'Account Created, check Email for Verification',
+                    error: (err)=> err.response?.data?.message || 'Error occured'
+                }
+            );
             
         } catch (error: any) {
             console.log("Signup failed", error)
-
-            if(error.response && error.response.data){
-                console.log(error.response.data)
-            }
 
         }finally{
             setLoading(false)
