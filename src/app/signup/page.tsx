@@ -46,7 +46,7 @@ export default function SignupPage() {
                     placeholder='Username'
                     value={user.username}
                     onChange ={(e: any)=>{
-                        setUser({...user, username:e.target.value})
+                        setUser({...user, username:e.target.value.trim()})
                     }}
                 />
 
@@ -55,7 +55,7 @@ export default function SignupPage() {
                     placeholder='Email'
                     value={user.email}
                     onChange ={(e: any)=>{
-                        setUser({...user, email:e.target.value})
+                        setUser({...user, email:e.target.value.trim()})
                     }}
                 />
 
@@ -64,7 +64,7 @@ export default function SignupPage() {
                     placeholder='Password'
                     value={user.password}
                     onChange ={(e: any)=>{
-                        setUser({...user, password:e.target.value})
+                        setUser({...user, password:e.target.value.trim()})
                     }}
                 />
 

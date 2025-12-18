@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if(user.verifyTokenExpiry > Date.now()){
+    if(user.verifyTokenExpiry < Date.now()){
         return NextResponse.json(
             {message: "Tokens Expired", success: false},
             {status: 400}
