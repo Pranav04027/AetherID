@@ -16,6 +16,10 @@ const authCodeSchema = new Schema({
         type: String,
         required: true,     // ensures the code can only be used by the requesting app
     },
+    responseType:{
+        type: String,
+        required:true
+    },
 
     expiresAt: {
         type: Date,

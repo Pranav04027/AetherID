@@ -28,7 +28,7 @@ export default function verifyPage() {
         }
       );
 
-      router.push("/login");
+      router.push("/dashboard");
     } catch (error: any) {
       console.log(error.response.data);
     }

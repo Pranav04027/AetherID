@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { refresh } from "next/cache";
 
 const userSchema = new mongoose.Schema({
     userId: {       // UUID for the user
