@@ -1,5 +1,4 @@
 import Nodemailer from "nodemailer";
-import crypto from "crypto";
 import { MailtrapTransport } from "mailtrap";
 import dotenv from "dotenv";
 dotenv.config();
@@ -27,12 +26,6 @@ export default async function mailer(userEmail: string, Token: any, type: string
     const subject = type === "VERIFY" ? "Email verification for AetherID" : "Password reset for AetherID"
     const link = type === "VERIFY" ? `${domain}/verify?verifytoken=${Token}` : `${domain}/resetpassword?resettoken=${Token}`
 
-    // Log the link in console for development/testing ease
-    console.log("=======================================================");
-    console.log(`[MAILER] Sending ${type} email to ${userEmail}`);
-    console.log(`[MAILER] Link: ${link}`);
-    console.log("=======================================================");
-
     await transport.sendMail({
       from: sender,
       to: recipients,
@@ -40,10 +33,9 @@ export default async function mailer(userEmail: string, Token: any, type: string
       text: type === "VERIFY" ? `To verify Email for AetherID please click on this link: ${link}` : `To change password for AetherID please click on this link: ${link}`,
       category: "Integration Test",
     });
-    console.log("Email sent successfully");
+    console.log("Email sent successfully. Link:", link);
 
   } catch (error: any) {
     console.error("Error occured while sending mail", error.message);
-    // We don't throw here so the signup process doesn't fail completely in dev
   }
 }

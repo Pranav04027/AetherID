@@ -45,7 +45,7 @@ export default function verifyPage() {
       console.log("Error: Verification token not found in URL.");
     }
   }, [searchParams]); //IMPORTANT
-  
+
   // Run the function
   useEffect(() => {
     if (token.length > 0) {
