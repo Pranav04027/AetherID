@@ -7,7 +7,7 @@ import mailer from "@/helpers/mailer";
 
 dbConnect();
 
-export enum mailtype {
+enum mailtype {
   VERIFY = "VERIFY",
   RESET = "RESET"
 }
@@ -24,10 +24,10 @@ export async function POST(request: NextRequest) {
     }
 
     //Check if user already exists.
-    const exisitingUser = await User.findOne({ username: username }).select("-password");
+    const exisitingUser = await User.findOne({ $or: [{ username: username }, { email: email }] }).select("-password");
     if (exisitingUser) {
       return NextResponse.json(
-        { success: false, message: "User already exisit" },
+        { success: false, message: "User with this username or email already exists" },
         { status: 400 }
       );
     }
@@ -52,7 +52,17 @@ export async function POST(request: NextRequest) {
       verifyTokenExpiry: Date.now() + 3600000
     });
 
-    await mailer(email, rawToken, mailtype.VERIFY);
+    try {
+      await mailer(email, rawToken, mailtype.VERIFY);
+    } catch (mailError: any) {
+      // If email fails, delete the user so they can try again (Atomic-ish for this flow)
+      await User.findByIdAndDelete(user._id);
+      console.error("Email sending failed, rolling back user creation:", mailError.message);
+      return NextResponse.json(
+        { message: "Failed to send verification email. Please check your email configuration.", success: false },
+        { status: 500 }
+      );
+    }
 
     if (process.env.ENVIROMENT === "development") {
       console.log("Created user:", user);
@@ -63,11 +73,10 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("Error occured in creating user in DB:", error);
+    console.error("Signup Error:", error.message);
     return NextResponse.json(
-      // In the frontend: error.response.data.messaage, error.response.status
-      { message: "Server Error", success: false }, // data
-      { status: 500 } // direct status
+      { message: "Internal Server Error: " + error.message, success: false },
+      { status: 500 }
     );
   }
 }
