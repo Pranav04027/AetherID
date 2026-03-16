@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         { message: "Logged out successfully" }, 
         { status: 200 }
     );
-    // clear cookies
+    // clear cookies from client side
     response.cookies.delete("accessToken");
     response.cookies.delete("refreshToken");
 
