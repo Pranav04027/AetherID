@@ -22,8 +22,9 @@ export default function ForgotPasswordPage() {
             const response = await axios.post("/api/user/forgotpassword", { email });
             toast.success("Password reset link sent to your email!");
             console.log("Forgot password response:", response.data);
-        } catch (error: any) {
-            const msg = error.response?.data?.message || "Something went wrong";
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const msg = err.response?.data?.message || "Something went wrong";
             toast.error(msg);
         } finally {
             setLoading(false);

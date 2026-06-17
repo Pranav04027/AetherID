@@ -85,19 +85,19 @@ export default function Home() {
             </div>
             <div className="p-6 font-mono text-sm overflow-x-auto">
               <div className="text-slate-400">
-                <span className="text-emerald-400">const</span> response = <span className="text-emerald-400">await</span> axios.post(<span className="text-green-400">"/api/oauth/token"</span>, {"{"}
+                <span className="text-emerald-400">const</span> response = <span className="text-emerald-400">await</span> axios.post(<span className="text-green-400">{'"/api/oauth/token"'}</span>, {"{"}
               </div>
               <div className="pl-4 text-slate-300">
-                grant_type: <span className="text-green-400">"authorization_code"</span>,
+                grant_type: <span className="text-green-400">{'"authorization_code"'}</span>,
               </div>
               <div className="pl-4 text-slate-300">
                 code: <span className="text-blue-400">authCode</span>,
               </div>
               <div className="pl-4 text-slate-300">
-                client_id: <span className="text-green-400">process.env.CLIENT_ID</span>
+                client_id: <span className="text-green-400">{'process.env.CLIENT_ID'}</span>
               </div>
               <div className="text-slate-400">{"}"});</div>
-              <div className="mt-4 text-slate-500">// Returns Access & Refresh Tokens</div>
+              <div className="mt-4 text-slate-500">{'// Returns Access & Refresh Tokens'}</div>
             </div>
           </div>
         </section>

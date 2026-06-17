@@ -17,37 +17,36 @@ export default function DashboardPage() {
     } | null>(null)
     const [loading, setLoading] = useState(true)
 
-    const getUserDetails = async () => {
-        try {
-            const res = await axios.get("/api/user/me")
-            setUser(res.data.data)
-        } catch (error: any) {
-            console.error(error.message)
-            if (error.response?.status === 401) {
-                toast.error("Session expired, please login again")
-                router.push("/login")
-                return
-            }
-            toast.error("Failed to load user data")
-        } finally {
-            setLoading(false)
-        }
-    }
-
     const logout = async () => {
         try {
             await axios.get("/api/user/logout")
             toast.success("Logout successful")
             router.push("/login")
-        } catch (error: any) {
-            console.error(error.message)
+        } catch (error) {
+            console.error((error as Error).message)
             toast.error("Logout failed")
         }
     }
 
     useEffect(() => {
+        const getUserDetails = async () => {
+            try {
+                const res = await axios.get("/api/user/me")
+                setUser(res.data.data)
+            } catch (error) {
+                console.error((error as Error).message)
+                if ((error as { response?: { status?: number } }).response?.status === 401) {
+                    toast.error("Session expired, please login again")
+                    router.push("/login")
+                    return
+                }
+                toast.error("Failed to load user data")
+            } finally {
+                setLoading(false)
+            }
+        }
         getUserDetails()
-    }, [])
+    }, [router])
 
     if (loading) {
         return (

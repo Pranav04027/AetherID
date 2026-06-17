@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
         const accessToken = header.split(" ")[1];
 
-        const decodedTokens = jwt.verify(accessToken, process.env.TOKEN_SECRET!) as any;
+        const decodedTokens = jwt.verify(accessToken, process.env.TOKEN_SECRET!) as jwt.JwtPayload;
 
         const userID = decodedTokens.userId;
         const user = await User.findOne({ userId: userID }).select("-password");
@@ -44,9 +44,9 @@ export async function GET(request: NextRequest) {
             email_verified: user.isVerified
         });
 
-    } catch (error: any) {
-        
-        if (error.name === "TokenExpiredError") {
+    } catch (error) {
+        const err = error as { name?: string };
+        if (err.name === "TokenExpiredError") {
             return NextResponse.json(
                 { 
                     error: "invalid_token", 

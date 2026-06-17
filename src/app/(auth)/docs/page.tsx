@@ -1,6 +1,6 @@
 "use client";
 
-import { Link as LinkIcon, Code2, ArrowRight, ShieldCheck, Terminal, BookOpen, Key } from "lucide-react";
+import { Code2, ArrowRight, ShieldCheck, Terminal, BookOpen, Key } from "lucide-react";
 import Link from 'next/link';
 
 export default function DocsPage() {
@@ -35,7 +35,7 @@ export default function DocsPage() {
                             <h1 className="text-3xl font-bold text-white">Developer Integration Guide</h1>
                         </div>
                         <p className="text-lg text-slate-400 leading-relaxed">
-                            Integrate <strong>"Log in with AetherID"</strong> into your application.
+                            Integrate <strong>{'"Log in with AetherID"'}</strong> into your application.
                             This guide details the OAuth 2.0 Authorization Code flow implementation for third-party developers.
                         </p>
                         <div className="mt-6 flex flex-wrap gap-4">

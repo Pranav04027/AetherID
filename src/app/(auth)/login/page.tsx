@@ -68,9 +68,10 @@ function LoginContent() {
                 router.push("/dashboard")
             }
 
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string } } };
             console.error("Login failed", error)
-            toast.error(error.response?.data?.message || 'Login failed')
+            toast.error(err.response?.data?.message || 'Login failed')
         } finally {
             setIsLoading(false)
         }
@@ -129,7 +130,7 @@ function LoginContent() {
             </form>
 
             <div className="mt-6 text-center text-sm">
-                <span className="text-slate-400">Don't have an account? </span>
+                <span className="text-slate-400">Don&apos;t have an account? </span>
                 <Link href="/signup" className="font-medium text-emerald-500 hover:text-emerald-400 hover:underline">
                     Sign up
                 </Link>

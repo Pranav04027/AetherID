@@ -1,5 +1,6 @@
 import dbConnect from "@/dbConfig/dbConfig";
 import mailer from "@/helpers/mailer";
+import { mailtype } from "@/helpers/mailer";
 import { NextRequest, NextResponse } from "next/server";
 import { User } from "@/models/User";
 import crypto from "crypto";
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
         await user.save();
 
         // Send password reset email
-        await mailer(user.email, resetToken, "RESET");
+        await mailer(user.email, resetToken, mailtype.RESET);
 
         return NextResponse.json(
             { message: "reset_email_sent", success: true },

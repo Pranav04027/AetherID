@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
         }
 
         // 2. Verify the cookie
-        const decoded: any = jwt.verify(token, process.env.TOKEN_SECRET!);
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET!) as jwt.JwtPayload;
 
         // 3. Get User Data (Select only what you need for the UI)
         const user = await User.findOne({ userId: decoded.id }).select("-password");
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
             }
         });
 
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 400 });
     }
 }

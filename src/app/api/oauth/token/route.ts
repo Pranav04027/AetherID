@@ -65,10 +65,10 @@ export async function POST(request: NextRequest) {
       }
 
       // Verify the incoming refresh token
-      let decoded: any;
+      let decoded: jwt.JwtPayload;
       try {
-        decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET!);
-      } catch (e) {
+        decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET!) as jwt.JwtPayload;
+      } catch {
         return NextResponse.json({ error: "invalid_grant" }, { status: 400 });
       }
 
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
 
       // Find the specific token in the array
       const tokenRecord = user.refreshToken.find(
-        (entry: any) => entry.tokenHash === incomingTokenHash
+        (entry: { tokenHash: string; expiresAt: Date; createdFrom: string; clientId?: string }) => entry.tokenHash === incomingTokenHash
       );
 
       if (!tokenRecord) {
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 
       if (new Date() > new Date(tokenRecord.expiresAt)) {
         user.refreshToken = user.refreshToken.filter(
-          (entry: any) => entry.tokenHash !== incomingTokenHash
+          (entry: { tokenHash: string; expiresAt: Date; createdFrom: string; clientId?: string }) => entry.tokenHash !== incomingTokenHash
         );
         await user.save();
         return NextResponse.json(
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
       }
 
       user.refreshToken = user.refreshToken.filter(
-        (t: any) => t.tokenHash !== incomingTokenHash
+        (t: { tokenHash: string; expiresAt: Date; createdFrom: string; clientId?: string }) => t.tokenHash !== incomingTokenHash
       );
 
       return await issueTokens(user, clientId);
@@ -118,12 +118,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Exchange Error:", error);
     return NextResponse.json({ error: "server_error" }, { status: 500 });
   }
 }
-async function issueTokens(user: any, clientId: string) {
+async function issueTokens(user: NonNullable<Awaited<ReturnType<typeof User.findOne>>>, clientId: string) {
   // Tokens
   const accessToken = jwt.sign(
     { userId: user.userId, email: user.email, clientId: clientId },
@@ -140,6 +140,7 @@ async function issueTokens(user: any, clientId: string) {
     tokenHash: crypto.createHash("sha256").update(refreshToken).digest("hex"),
     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
     createdFrom: "api_exchange",
+    clientId: clientId,
   });
 
   await user.save();

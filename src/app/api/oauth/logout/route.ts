@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
         }
 
         const accessToken = authHeader.split(" ")[1];
-        let decoded: any;
+        let decoded: jwt.JwtPayload;
 
         try {
-            decoded = jwt.verify(accessToken, process.env.TOKEN_SECRET!);
-        } catch (error) {
+            decoded = jwt.verify(accessToken, process.env.TOKEN_SECRET!) as jwt.JwtPayload;
+        } catch {
             return response;
         }
 
@@ -38,12 +38,14 @@ export async function POST(request: NextRequest) {
         
         if (user) {
             if (all === true) {
-                user.refreshToken = [];
+                user.refreshToken = user.refreshToken.filter(
+                    (t: { clientId?: string }) => t.clientId !== decoded.clientId
+                );
                 await user.save();
             } else if (token) {
                 const incomingTokenHash = crypto.createHash("sha256").update(token).digest("hex");
                 user.refreshToken = user.refreshToken.filter(
-                    (element: any) => element.tokenHash !== incomingTokenHash
+                    (element: { tokenHash: string; expiresAt: Date; createdFrom: string; clientId?: string }) => element.tokenHash !== incomingTokenHash
                 );
                 await user.save();
             }
@@ -51,7 +53,7 @@ export async function POST(request: NextRequest) {
 
         return response;
 
-    } catch (error: any) {
+    } catch {
         return response;
     }
 }

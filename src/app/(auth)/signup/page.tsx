@@ -37,9 +37,10 @@ export default function SignupPage() {
             toast.success("Account created! Please verify your email.");
             router.push("/login"); // Redirect to login after successful signup
 
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as { response?: { data?: { message?: string } } };
             console.log("Signup failed", error);
-            toast.error(error.response?.data?.message || 'Signup failed');
+            toast.error(err.response?.data?.message || 'Signup failed');
         } finally {
             setLoading(false)
         }

@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       { message: "The Client was created Successfully", success: true },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error(error);
     return NextResponse.json(
       { message: "Some error occured", success: false },

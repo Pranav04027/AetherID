@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-export default function client_registration() {
+export default function ClientRegistration() {
 
   const [loading, setLoading] = useState(false)
 
@@ -28,7 +28,7 @@ export default function client_registration() {
           error: (err) => err.response?.data?.message || 'Error occured'
         }
       );
-    } catch (error: any) {
+    } catch (error) {
       console.log("Client Registration failed", error)
     } finally {
       setLoading(false)
@@ -57,7 +57,7 @@ export default function client_registration() {
               placeholder="AetherID Verified Email"
               className="flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/50 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/50 focus-visible:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
               value={Info.userEmail}
-              onChange={(e: any) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setInfo({ ...Info, userEmail: e.target.value.trim() });
               }}
               disabled={loading}
@@ -71,7 +71,7 @@ export default function client_registration() {
               placeholder="Your App Name"
               className="flex h-10 w-full rounded-md border border-slate-800 bg-slate-950/50 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/50 focus-visible:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200"
               value={Info.appName}
-              onChange={(e: any) => { setInfo({ ...Info, appName: e.target.value.trim() }) }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setInfo({ ...Info, appName: e.target.value.trim() }) }}
               disabled={loading}
             />
           </div>

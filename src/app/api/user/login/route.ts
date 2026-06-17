@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const body = await request.json();
-    const { redirect_uri, responseType, client_id, user_Email, user_password, state } =
+    const { redirect_uri, responseType, client_id, user_Email, user_password } =
       body;
 
     if (!user_Email || !user_password) {
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
       const client = await Client.findOne({ clientId: client_id });
 
-      var validURI = false;
+      let validURI = false;
       client.allowedRedirectUris.forEach((element: string) => {
         if (element == redirect_uri) {
           validURI = true;
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
         email: user.email
       }
 
-      var token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, { expiresIn: '1d' });
+      const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, { expiresIn: '1d' });
 
       const response = NextResponse.json(
         {
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
 
       return response;
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error occured:", error);
     return NextResponse.json(
       { message: "Some error Occured", success: false },

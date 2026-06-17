@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-  } catch (error: any) {
+  } catch {
     return NextResponse.json(
       { messgae: "Error occured", success: false },
       { status: 400 }

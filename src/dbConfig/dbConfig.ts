@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 
-let isConnected = false;
+const isConnected = false;
 
 export default async function dbConnect() {
   try {
@@ -22,7 +22,7 @@ export default async function dbConnect() {
 
       return connection;
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Filled to connect to the database", error)
   }
 }

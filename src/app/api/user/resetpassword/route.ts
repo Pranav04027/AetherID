@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { User } from "@/models/User";
 import dbConnect from "@/dbConfig/dbConfig";
 import crypto from "crypto";
-import bcryptjs from "bcryptjs";
 
 export async function POST(request: NextRequest) {
     try {
@@ -45,7 +44,7 @@ export async function POST(request: NextRequest) {
             success: true
         });
 
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ error: (error as Error).message }, { status: 500 });
     }
 }

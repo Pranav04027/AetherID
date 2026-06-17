@@ -4,13 +4,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
 import mailer from "@/helpers/mailer";
+import { mailtype } from "@/helpers/mailer";
 
 dbConnect();
-
-enum mailtype {
-  VERIFY = "VERIFY",
-  RESET = "RESET"
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,10 +50,10 @@ export async function POST(request: NextRequest) {
 
     try {
       await mailer(email, rawToken, mailtype.VERIFY);
-    } catch (mailError: any) {
+    } catch (mailError) {
       // If email fails, delete the user so they can try again (Atomic-ish for this flow)
       await User.findByIdAndDelete(user._id);
-      console.error("Email sending failed, rolling back user creation:", mailError.message);
+      console.error("Email sending failed, rolling back user creation:", (mailError as Error).message);
       return NextResponse.json(
         { message: "Failed to send verification email. Please check your email configuration.", success: false },
         { status: 500 }
@@ -72,10 +68,11 @@ export async function POST(request: NextRequest) {
       { message: "Account created! Please check your email.", success: true },
       { status: 201 }
     );
-  } catch (error: any) {
-    console.error("Signup Error:", error.message);
+  } catch (error) {
+    const err = error as Error;
+    console.error("Signup Error:", err.message);
     return NextResponse.json(
-      { message: "Internal Server Error: " + error.message, success: false },
+      { message: "Internal Server Error: " + err.message, success: false },
       { status: 500 }
     );
   }

@@ -1,41 +1,36 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 function VerifyContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [token, setToken] = useState("");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("Verifying your email...");
 
-  const verify = async (verificationToken: string) => {
-    try {
-      await axios.post("/api/user/verify", { rawToken: verificationToken });
-      setStatus("success");
-      setMessage("Email Verified Successfully!");
-      // Optional: Auto redirect
-      // setTimeout(() => router.push('/login'), 3000);
-    } catch (error: any) {
-      setStatus("error");
-      setMessage(error.response?.data?.message || "Verification failed");
-    }
-  };
-
   useEffect(() => {
-    const urlToken = searchParams.get("verifytoken");
-    if (urlToken && urlToken.length > 0) {
-      setToken(urlToken);
-      verify(urlToken);
-    } else {
-      setStatus("error");
-      setMessage("No verification token found.");
-    }
+    const verifyEmail = async () => {
+      const urlToken = searchParams.get("verifytoken");
+      if (!urlToken) {
+        setStatus("error");
+        setMessage("No verification token found.");
+        return;
+      }
+      try {
+        await axios.post("/api/user/verify", { rawToken: urlToken });
+        setStatus("success");
+        setMessage("Email Verified Successfully!");
+      } catch (error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        setStatus("error");
+        setMessage(err.response?.data?.message || "Verification failed");
+      }
+    };
+    verifyEmail();
   }, [searchParams]);
 
   return (
